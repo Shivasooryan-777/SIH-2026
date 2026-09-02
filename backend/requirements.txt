@@ -1,0 +1,7 @@
+# Backend and Ingestion Dependencies
+# Locked stack per AGENTS.md
+
+yfinance>=0.2.38
+pandas>=2.2.0
+numpy>=1.26.0
+pytest>=8.0.0

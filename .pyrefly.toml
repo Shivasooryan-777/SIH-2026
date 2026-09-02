@@ -1,0 +1,25 @@
+# Pyrefly Configuration
+python = "d:/sih/backend/venv/Scripts/python.exe"
+interpreter = "d:/sih/backend/venv/Scripts/python.exe"
+python-interpreter = "d:/sih/backend/venv/Scripts/python.exe"
+python_interpreter = "d:/sih/backend/venv/Scripts/python.exe"
+venv = "d:/sih/backend/venv"
+
+search-paths = [
+  "backend",
+  "backend/venv/Lib/site-packages",
+  "d:/sih/backend",
+  "d:/sih/backend/venv/Lib/site-packages"
+]
+
+site-package-paths = [
+  "backend/venv/Lib/site-packages",
+  "d:/sih/backend/venv/Lib/site-packages"
+]
+
+exclude = [
+  "**/backend/venv/**",
+  "**/.venv/**",
+  "**/node_modules/**",
+  "**/.pytest_cache/**"
+]

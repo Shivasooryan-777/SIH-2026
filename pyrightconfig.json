@@ -1,0 +1,21 @@
+{
+  "include": [
+    "backend",
+    "ml"
+  ],
+  "exclude": [
+    "**/backend/venv",
+    "**/.venv",
+    "**/venv",
+    "**/__pycache__",
+    "**/node_modules"
+  ],
+  "venvPath": "backend",
+  "venv": "venv",
+  "extraPaths": [
+    "backend",
+    "backend/venv/Lib/site-packages"
+  ],
+  "pythonVersion": "3.13",
+  "pythonPlatform": "Windows"
+}

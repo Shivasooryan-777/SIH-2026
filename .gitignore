@@ -43,9 +43,10 @@ dist/
 dist-ssr/
 *.local
 
-# Data storage (keep directories via .gitkeep)
+# Data storage (keep directories via .gitkeep and documentation)
 data/raw/*
 !data/raw/.gitkeep
+!data/raw/README.md
 data/processed/*
 !data/processed/.gitkeep
 
