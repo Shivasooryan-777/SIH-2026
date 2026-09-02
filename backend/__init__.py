@@ -1,0 +1,3 @@
+"""
+Backend root package.
+"""

@@ -1,7 +1,19 @@
 # Backend and Ingestion Dependencies
 # Locked stack per AGENTS.md
 
+# Data and Ingestion (Session 2)
 yfinance>=0.2.38
 pandas>=2.2.0
 numpy>=1.26.0
+
+# API and Database (Session 3)
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+sqlalchemy>=2.0.28
+psycopg2-binary>=2.9.9
+python-dotenv>=1.0.1
+pydantic>=2.6.0
+
+# Testing
 pytest>=8.0.0
+httpx>=0.27.0
