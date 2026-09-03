@@ -52,7 +52,7 @@ EXPECTED_SCHEMA = {
             "rate_id", "date", "vessel_type_id",
             "index_type", "value_usd_per_day", "source",
         ],
-        "nullable_cols": set(),
+        "nullable_cols": {"vessel_type_id"},
     },
     "macro_indicators": {
         "columns": [
@@ -88,7 +88,7 @@ EXPECTED_SCHEMA = {
             "forecast_id", "request_id", "generated_at",
             "vessel_type_id", "p10_price", "p50_price", "p90_price", "model_version",
         ],
-        "nullable_cols": set(),
+        "nullable_cols": {"vessel_type_id"},
     },
     "shap_explanations": {
         "columns": [

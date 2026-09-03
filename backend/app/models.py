@@ -84,7 +84,7 @@ class FreightRateData(Base):
 
     rate_id = Column(Integer, primary_key=True, autoincrement=True)
     date = Column(Date, nullable=False)
-    vessel_type_id = Column(Integer, ForeignKey("vessel_types.vessel_type_id"), nullable=False)
+    vessel_type_id = Column(Integer, ForeignKey("vessel_types.vessel_type_id"), nullable=True)
     index_type = Column(String(30), nullable=False)  # e.g., 'BDRY_proxy'
     value_usd_per_day = Column(Numeric(10, 2), nullable=False)
     source = Column(String(50), nullable=False)
@@ -159,11 +159,11 @@ class ForecastResult(Base):
     forecast_id = Column(Integer, primary_key=True, autoincrement=True)
     request_id = Column(Integer, ForeignKey("cargo_requests.request_id"), nullable=False)
     generated_at = Column(DateTime, nullable=False, server_default=func.now())
-    vessel_type_id = Column(Integer, ForeignKey("vessel_types.vessel_type_id"), nullable=False)
+    vessel_type_id = Column(Integer, ForeignKey("vessel_types.vessel_type_id"), nullable=True)
     p10_price = Column(Numeric(10, 2), nullable=False)
     p50_price = Column(Numeric(10, 2), nullable=False)
     p90_price = Column(Numeric(10, 2), nullable=False)
-    model_version = Column(String(20), nullable=False)
+    model_version = Column(String(30), nullable=False)
 
 
 class ShapExplanation(Base):

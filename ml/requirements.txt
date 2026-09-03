@@ -1,0 +1,8 @@
+# Machine Learning & Forecasting Dependencies for Module A
+# Locked stack per AGENTS.md and docs/blueprint.md
+scikit-learn>=1.4.0
+xgboost>=2.0.0
+lightgbm>=4.3.0
+shap>=0.44.0
+prophet>=1.1.5
+psutil>=5.9.0

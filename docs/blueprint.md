@@ -32,6 +32,28 @@ SIH 2026 | Problem Statement ID: SIH26006 | Ministry of Steel
 > Everywhere below that says "spliced historical BDI," read it as superseded by
 > this amendment unless/until real BDI data is sourced and this note is removed.
 
+> [!WARNING]
+> **AMENDMENT — General Dry-Bulk Forecast Scope (added Session 5 Correction)**
+>
+> Module A produces a single general dry-bulk freight market forecast
+> (stored with `vessel_type_id = NULL` in `FreightRateData` and `ForecastResults`).
+>
+> - **Out of scope for prototype:** Distinct per-vessel-class time-series
+>   dynamics (e.g., independent Capesize vs. Handysize rate divergence).
+> - **Reason:** Sourcing genuine, independent per-vessel freight rate benchmarks
+>   requires proprietary, licensed sub-indices (Baltic Capesize Index BCI,
+>   Baltic Panamax Index BPI, Baltic Supramax Index BSI, Baltic Handysize
+>   Index BHSI) that are paywalled and not publicly accessible.
+>   Applying synthetic scalar multipliers to BDRY to fabricate per-vessel
+>   rates was explicitly rejected as an ungrounded shortcut violating the
+>   project's credibility principles.
+> - **Impact on downstream modules:** None. Module D's fix-vs-wait expected-value
+>   formula operates on the general dry-bulk freight trajectory and uncertainty spread;
+>   vessel-class selection is governed by Module B's port draft/LOA/beam
+>   compatibility engine.
+> - **Future Scope:** Integrating licensed Baltic sub-indices or ULIP vessel-class
+>   fixture feeds to enable authentic cross-vessel rate modeling.
+
 ---
 
 ## 1. Problem Statement
@@ -321,7 +343,7 @@ STAGE 7: SERVE
 |---|---|---|---|
 | rate_id | SERIAL | PRIMARY KEY | Unique row identifier |
 | date | DATE | NOT NULL | Observation date |
-| vessel_type_id | INTEGER | FOREIGN KEY -> VesselTypes.vessel_type_id | Which vessel class this rate applies to |
+| vessel_type_id | INTEGER | FOREIGN KEY -> VesselTypes.vessel_type_id, NULLABLE | Which vessel class this rate applies to (NULL = general dry-bulk market index) |
 | index_type | VARCHAR(30) | NOT NULL | 'BDRY_proxy' (currently the only value in use per amendment) |
 | value_usd_per_day | NUMERIC(10,2) | NOT NULL | Rate value |
 | source | VARCHAR(50) | NOT NULL | Data provenance, for transparency in the report |
@@ -379,7 +401,7 @@ STAGE 7: SERVE
 | forecast_id | SERIAL | PRIMARY KEY | Unique row identifier |
 | request_id | INTEGER | FOREIGN KEY -> CargoRequests.request_id | Which request this forecast was generated for |
 | generated_at | TIMESTAMP | NOT NULL DEFAULT now() | Generation timestamp |
-| vessel_type_id | INTEGER | FOREIGN KEY -> VesselTypes.vessel_type_id | Vessel class this forecast covers |
+| vessel_type_id | INTEGER | FOREIGN KEY -> VesselTypes.vessel_type_id, NULLABLE | Vessel class this forecast covers (NULL = general dry-bulk forecast) |
 | p10_price | NUMERIC(10,2) | NOT NULL | 10th percentile forecast price |
 | p50_price | NUMERIC(10,2) | NOT NULL | Median forecast price |
 | p90_price | NUMERIC(10,2) | NOT NULL | 90th percentile forecast price |
