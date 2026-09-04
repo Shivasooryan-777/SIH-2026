@@ -16,7 +16,7 @@ All features at observation row t depend strictly on data available at or before
 import logging
 import sys
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, cast
 
 import numpy as np
 import pandas as pd
@@ -217,8 +217,8 @@ def prepare_features(
         f_df, m_df = load_raw_data_from_csv()
 
     feat_df = build_feature_matrix(f_df, m_df)
-    feature_cols = [c for c in feat_df.columns if c not in ["date", "target_freight_usd"]]
+    feature_cols: List[str] = [str(c) for c in feat_df.columns if str(c) not in ["date", "target_freight_usd"]]
 
     X = feat_df[feature_cols].copy()
-    y = feat_df["target_freight_usd"].copy()
+    y = cast(pd.Series, feat_df["target_freight_usd"].copy())
     return feat_df, y, feature_cols

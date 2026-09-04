@@ -10,7 +10,7 @@ median (P50) tree-based model, per docs/blueprint.md Module A and Section 8.3:
 
 import logging
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -27,7 +27,7 @@ class FeatureExplanation:
 
 
 def compute_shap_explanations(
-    tree_model: any,
+    tree_model: Any,
     X_single: pd.DataFrame,
     top_k: int = 3,
 ) -> List[FeatureExplanation]:

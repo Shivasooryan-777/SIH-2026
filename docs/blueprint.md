@@ -54,6 +54,19 @@ SIH 2026 | Problem Statement ID: SIH26006 | Ministry of Steel
 > - **Future Scope:** Integrating licensed Baltic sub-indices or ULIP vessel-class
 >   fixture feeds to enable authentic cross-vessel rate modeling.
 
+> [!WARNING]
+> **AMENDMENT — Multi-Step Forecasting Extrapolation & Recursive Horizon Restriction (added Session 6)**
+>
+> - **Extrapolation Boundary:** Tree-based models (XGBoost, LightGBM) partition feature space and cannot extrapolate beyond the minimum and maximum target price values observed in training data.
+> - **Diagnostic Finding (Recursive Multi-Step Dampening Bias):** Recursive multi-step forecasting across 7, 14, 21, and 28-day horizons was found to introduce systematic downward drift in P50 predictions at longer horizons (21 and 28 days) rather than reflecting genuine market trough dynamics. Diagnostic analysis demonstrated that 77.8% (7 of 9) of historical WAIT recommendations mechanically defaulted to $N=28$ simply because recursive autoregression progressively compounded lower point forecasts over time.
+> - **Candidate Horizon Scoping ($N \in \{7, 14\}$):** Candidate decision windows in Module D are strictly restricted to $N \in \{7, 14\}$ days, where the model has demonstrated reliable, empirical stability.
+> - **Disclosed Model-Scoping Decision:** This is a disclosed model-scoping decision made after diagnostic investigation, not silent post-hoc data exclusion.
+> - **Regime Shift Vulnerability & Black Swan Limitation:** Even under this restricted candidate set, the backtest can still show a net loss relative to the naive baseline during genuine, undocumented market regime shifts. Three historical 2020–2023 events illustrate this limitation:
+>   1. *January 2021 Post-COVID Commodity Spike:* Rapid demand acceleration following industrial reopenings.
+>   2. *Early 2021 Pre-Suez Freight Squeeze:* Extreme regional tonnage tightening immediately preceding the canal blockage.
+>   3. *Early 2023 China Reopening Rally:* Abrupt dry-bulk surge following lifting of pandemic restrictions.
+> - **Honest Limitation Framing:** No statistical or ML model trained exclusively on prior data can anticipate genuinely unprecedented shocks. This system's honest job is to perform reliably in normal/detectable-risk regimes while being completely transparent about its blind spots during true Black Swan events. Future work addresses this via direct per-horizon quantile modeling (Section 12).
+
 ---
 
 ## 1. Problem Statement
@@ -120,7 +133,12 @@ effective_draft(port, date) =
     PortDraftAdvisory.available_draft_m for that port/date if present,
     ELSE port.baseline_draft_m adjusted by a seasonal monsoon-siltation
     reduction factor (a documented approximation, not a live feed —
-    stated explicitly as such in the presentation).
+    stated explicitly as such in the presentation):
+      - Southwest Monsoon (June 1 – September 30): 0.90 factor (10% draft reduction
+        approximation reflecting heavy estuarine river siltation and high swell at East Coast India ports)
+      - Post-Monsoon / Cyclonic Season (October 1 – November 30): 0.95 factor (5% draft reduction approximation)
+      - Fair Weather Season (December 1 – May 31): 1.00 factor (full design baseline draft)
+      - Origin Ports (Overseas loading): 1.00 factor unless advisory is on record.
 ```
 
 **Output:** For a given cargo volume and destination port, a ranked list of compatible vessel types, largest-safe-first (larger vessel classes reduce per-ton freight cost when compatible). This feeds directly into Module D's recommendation.
@@ -161,6 +179,10 @@ DECISION RULE:
   ELSE                              ->  Recommend FIX NOW (report the
         expected USD/day cost avoided versus the worse alternative)
 ```
+
+> [!IMPORTANT]
+> **Production Candidate Horizon Limitation ($N \in \{7, 14\}$):**
+> Live candidate horizons evaluated by `make_chartering_decision` are restricted strictly to $N \in \{7, 14\}$ days. Diagnostic analysis revealed that recursive multi-step autoregressive forecasting systematically dampens P50 price forecasts at longer horizons (21 and 28 days), causing 77.8% of historical WAIT decisions to mechanically select $N=28$ regardless of genuine trough dynamics. Restricting candidate windows to $\{7, 14\}$ preserves empirical stability. As disclosed, during unprecedented regime shifts (the Jan 2021 post-COVID commodity spike, early 2021 pre-Suez freight squeeze, and China's 2023 reopening rally), waiting can show a net loss relative to the naive baseline; this is an authentic, disclosed limitation of training solely on prior data when facing Black Swan disruptions.
 
 **Output:** A `DecisionRecommendations` record: recommended_action (fix_now / wait), recommended_vessel_type_id (from Module B's ranked list), expected_price, and expected_savings_usd — always accompanied by the SHAP-based explanation of which features drove the recommendation.
 
@@ -486,7 +508,7 @@ STAGE 7: SERVE
 7. **Idle Scenario Management was initially missing entirely.** Fix: added Module E (spot-vs-period structuring + speed/fuel optimization advisory), directly closing PS requirement (c).
 8. **'Early warning' was initially only available on-demand.** Fix: added the Always-On Market Watch layer (Module F, Layer 1), surfacing active risk flags proactively on dashboard load rather than only in response to a specific query.
 9. **Freight-proxy divergence risk was undisclosed.** Fix: the project report must state the correlation between the BDRY-based proxy and any available India-specific rate reference points, honestly, including where they diverge, rather than presenting the proxy as equivalent to the real paywalled index without qualification. *(This principle is exactly why the Option B amendment above is disclosed explicitly rather than glossed over.)*
-10. **Implausible backtest savings figures.** Fix: any Module D or Module E backtest result showing an implausibly large saving (rule of thumb: above roughly 20-25%) must be treated as a probable leakage/bug signal and investigated before being reported, not presented as a positive result.
+10. **Implausible backtest savings figures & recursive forecasting horizon bias.** Fix: any Module D or Module E backtest result showing an implausibly large saving (rule of thumb: above roughly 20-25%) must be treated as a probable leakage/bug signal and investigated before being reported, not presented as a positive result. Furthermore, diagnostic analysis of Module D backtest outputs revealed that recursive multi-step forecasting systematically dampens P50 predictions at 21 and 28 days, mechanically biasing the engine so that 77.8% of WAIT recommendations defaulted to $N=28$. To prevent this recursive rollout artifact from driving production decisions, candidate windows were strictly restricted to $N \in \{7, 14\}$ days where the model demonstrates reliable behavior. This is a disclosed model-scoping decision made after diagnostic investigation, not silent post-hoc data exclusion. Even under this restriction, the system honestly discloses potential losses during unprecedented regime shifts (e.g., the Jan 2021 post-COVID commodity spike, early 2021 pre-Suez freight squeeze, and China's 2023 reopening rally), treating model boundaries during Black Swan shocks with complete transparency.
 
 ## 10. Feasibility & Viability
 
@@ -513,3 +535,5 @@ STAGE 7: SERVE
 - A full outcome-tracking feedback loop on `ActionedDecisions` — recording actual post-decision results against what was recommended, enabling the system to be evaluated (and to improve) against its own real-world track record over time.
 - A live news/RSS-based NLP classifier as an optional real-time layer on top of the currently backtest-validated Risk Radar.
 - **(Added)** Sourcing real, verified pre-2018 historical BDI data to restore full splicing coverage, if a safe and reliable source is identified after the prototype deadline.
+- **(Added)** Rule-based lighterage & offshore transshipment cost comparison: Modeling two-stage lightening (e.g. Capesize lighterage at Sagar/Sandheads deepwater anchorage prior to Haldia riverine transit, or Paradip SPM deep-draft offshore lighterage) comparing lighterage barge/demurrage fees against direct smaller-vessel voyage charter costs.
+- **(Added)** Direct Per-Horizon Quantile Modeling: Replacing recursive multi-step autoregressive rollout with direct, independent per-horizon quantile models (e.g., dedicated models trained specifically for $h=7$, $h=14$, $h=21$, and $h=28$ days). This eliminates the compounding recursive downward dampening bias observed at longer horizons and enables safely expanding candidate windows beyond 14 days without mechanical default to the maximum horizon.
