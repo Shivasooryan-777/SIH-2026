@@ -14,7 +14,15 @@ site-package-paths = [
   "backend/venv/Lib/site-packages",
   "d:/sih/backend/venv/Lib/site-packages"
 ]
-exclude = ["backend/venv/**", "**/.pytest_cache/**"]
+exclude = [
+  "backend/venv/**",
+  "**/.pytest_cache/**",
+  "**/__pyrefly_virtual__/**",
+  "**/inmemory/**",
+  "d:/__pyrefly_virtual__/**",
+  "__pyrefly_virtual__/**"
+]
+
 
 [tool.pyright]
 include = ["backend", "ml"]

@@ -21,5 +21,10 @@ exclude = [
   "**/backend/venv/**",
   "**/.venv/**",
   "**/node_modules/**",
-  "**/.pytest_cache/**"
+  "**/.pytest_cache/**",
+  "**/__pyrefly_virtual__/**",
+  "**/inmemory/**",
+  "d:/__pyrefly_virtual__/**",
+  "__pyrefly_virtual__/**"
 ]
+

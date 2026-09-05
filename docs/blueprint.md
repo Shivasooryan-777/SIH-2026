@@ -215,11 +215,13 @@ v_std          = VesselTypes.standard_speed_knots
 T_required     = (d / v_std) + expected_port_congestion_hours - safety_buffer_hours
 v_recommended  = clamp(d / T_required, min_safe_speed_knots, v_std)
 
-Fuel_ref(d, v)      = fuel_curve_coef * d * (v ** 2)   # relative units
+Fuel_ref(d, v)      = (fuel_curve_coef / 24.0) * d * (v ** 2)   # metric tons (Admiralty-style approximation)
 Fuel_saved          = Fuel_ref(d, v_std) - Fuel_ref(d, v_recommended)
 CO2_reduced_kg      = Fuel_saved * emission_factor_kg_per_unit
 Cost_saved_usd      = Fuel_saved * bunker_fuel_price_usd_per_unit
 ```
+
+*Note on Unit Formulation:* The formula above produces metric tons based on standard Admiralty naval architecture approximations ($\text{Daily Fuel (t/day)} = c \cdot v^3$; over passage distance $d$ at speed $v$, passage hours $= d/v$, passage days $= d/(24v)$, yielding $\text{Fuel (tons)} = (c / 24) \cdot d \cdot v^2$). The original blueprint draft omitted the $1/24$ daily conversion factor and labelled the output as "relative units"; this was formally corrected in this session after a magnitude sanity check revealed ~24–40x inflated figures compared to real-world Capesize passage fuel baselines.
 
 Output: `SpeedOptimizationLog` record: standard_speed_knots, recommended_speed_knots, port_congestion_hours, fuel_saved_tons, co2_reduced_kg — surfaced alongside the Module D recommendation whenever a cargo request's vessel is marked as already in transit.
 
