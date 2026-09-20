@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Ship, Activity, Sliders, ArrowLeft } from 'lucide-react';
 import { fetchHealth, fetchMarketWatch } from '../api/client';
 import type { MarketWatchResponse, ActiveRiskFlag } from '../api/types';
+import { ThemeToggle } from './ThemeToggle';
 
 interface TopBarProps {
   onOpenTransparency?: () => void;
@@ -24,7 +25,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenTransparency }) => {
     async function loadHealth() {
       try {
         const res = await fetchHealth();
-        if (isMounted) setDbHealthy(res.status === 'healthy');
+        if (isMounted) setDbHealthy(res.status === 'healthy' && res.database === 'connected');
       } catch {
         if (isMounted) setDbHealthy(false);
       }
@@ -61,12 +62,24 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenTransparency }) => {
   const getRiskDotColor = (level?: string | null) => {
     switch ((level || 'calm').toLowerCase()) {
       case 'high':
-        return '#E4574C';
+        return 'var(--color-danger)';
       case 'elevated':
-        return '#E8A33D';
+        return 'var(--color-warning)';
       case 'calm':
       default:
-        return '#22A97A';
+        return 'var(--color-positive)';
+    }
+  };
+
+  const getRiskBadgeClass = (level?: string | null) => {
+    switch ((level || 'calm').toLowerCase()) {
+      case 'high':
+        return 'bg-semantic-risk/20 text-semantic-risk';
+      case 'elevated':
+        return 'bg-semantic-wait/20 text-semantic-wait';
+      case 'calm':
+      default:
+        return 'bg-semantic-positive/20 text-semantic-positive';
     }
   };
 
@@ -132,7 +145,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenTransparency }) => {
   const tickerItems = [...macroItems, ...corridorItems];
 
   return (
-    <header className="w-full bg-[#09090B] border-b border-[#26262B] sticky top-0 z-40">
+    <header className="w-full bg-canvas border-b border-border sticky top-0 z-40">
       {/* Upper Navigation Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
         {/* Left: Branding & Back Button */}
@@ -140,19 +153,19 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenTransparency }) => {
           <button
             onClick={() => navigate('/')}
             title="Return to Landing Page"
-            className="w-9 h-9 rounded-2xl bg-[#131316] border border-[#26262B] flex items-center justify-center text-text-secondary hover:text-text-primary hover:border-[#3F3F46] transition-colors"
+            className="w-9 h-9 rounded-2xl bg-surface border border-border flex items-center justify-center text-text-secondary hover:text-text-primary hover:border-text-secondary/50 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
 
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#131316] border border-[#26262B] flex items-center justify-center text-accent">
+            <div className="w-8 h-8 rounded-xl bg-surface border border-border flex items-center justify-center text-accent">
               <Ship className="w-4 h-4" />
             </div>
             <div>
               <div className="text-sm font-semibold tracking-tight text-text-primary flex items-center gap-2">
                 <span>NAV-STEEL DSS</span>
-                <span className="hidden sm:inline text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[#131316] border border-[#26262B] text-accent">
+                <span className="hidden sm:inline text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-surface border border-border text-accent">
                   SIH26006
                 </span>
               </div>
@@ -166,29 +179,38 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenTransparency }) => {
         {/* Center / Right: DB Health Pill & Transparency Trigger */}
         <div className="flex items-center gap-3">
           {/* Neon DB Health Pill */}
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#131316] border border-[#26262B] text-xs font-mono">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface border border-border text-xs font-mono">
             <span
-              className="w-2 h-2 rounded-full shrink-0"
-              style={{
-                backgroundColor: dbHealthy === true ? '#22A97A' : dbHealthy === false ? '#E4574C' : '#E8A33D',
-              }}
+              className={`w-2 h-2 rounded-full shrink-0 ${
+                dbHealthy === true
+                  ? 'bg-semantic-positive'
+                  : dbHealthy === false
+                  ? 'bg-semantic-risk'
+                  : 'bg-semantic-wait'
+              }`}
             />
             <span className="hidden md:inline text-text-secondary">NEON DB</span>
             <span
-              className="font-medium"
-              style={{
-                color: dbHealthy === true ? '#22A97A' : dbHealthy === false ? '#E4574C' : '#E8A33D',
-              }}
+              className={`font-medium ${
+                dbHealthy === true
+                  ? 'text-semantic-positive'
+                  : dbHealthy === false
+                  ? 'text-semantic-risk'
+                  : 'text-semantic-wait'
+              }`}
             >
               {dbHealthy === true ? 'CONNECTED' : dbHealthy === false ? 'DISCONNECTED' : 'CHECKING...'}
             </span>
           </div>
 
+          {/* Theme Toggle */}
+          <ThemeToggle />
+
           {/* Model Transparency Drawer Trigger */}
           {onOpenTransparency && (
             <button
               onClick={onOpenTransparency}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#131316] border border-[#26262B] text-xs font-medium text-text-secondary hover:text-text-primary hover:border-accent transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface border border-border text-xs font-medium text-text-secondary hover:text-text-primary hover:border-accent transition-colors"
             >
               <Sliders className="w-3.5 h-3.5 text-accent" />
               <span className="hidden sm:inline">Transparency &amp; Disclosures</span>
@@ -198,21 +220,17 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenTransparency }) => {
       </div>
 
       {/* Always-On Market Watch Ticker Strip */}
-      <div className="w-full bg-[#131316] border-t border-[#26262B] py-2 px-4 overflow-hidden relative">
+      <div className="w-full bg-surface border-t border-border py-2 px-4 overflow-hidden relative">
         {/* Desktop / Tablet: Auto-scrolling Strip (pauses on hover) */}
         <div className="hidden md:flex items-center">
           {/* Sentiment Anchor Tag */}
-          <div className="shrink-0 pr-4 mr-2 border-r border-[#26262B] flex items-center gap-2 text-xs">
+          <div className="shrink-0 pr-4 mr-2 border-r border-border flex items-center gap-2 text-xs">
             <Activity className="w-3.5 h-3.5 text-accent" />
             <span className="text-[11px] font-semibold tracking-wider text-text-secondary uppercase">
               MARKET WATCH:
             </span>
             <span
-              className="px-2 py-0.5 rounded-full text-[10px] font-mono uppercase font-bold"
-              style={{
-                color: getRiskDotColor(marketWatch?.overall_sentiment || 'calm'),
-                backgroundColor: `${getRiskDotColor(marketWatch?.overall_sentiment || 'calm')}15`,
-              }}
+              className={`px-2 py-0.5 rounded-full text-[10px] font-mono uppercase font-bold ${getRiskBadgeClass(marketWatch?.overall_sentiment)}`}
             >
               {marketWatch?.overall_sentiment || 'CALM'}
             </span>
@@ -250,11 +268,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenTransparency }) => {
             <Activity className="w-3.5 h-3.5 text-accent" />
             <span className="text-text-secondary text-[11px] font-medium">Market:</span>
             <span
-              className="px-2 py-0.5 rounded-full text-[10px] font-mono uppercase font-bold"
-              style={{
-                color: getRiskDotColor(marketWatch?.overall_sentiment || 'calm'),
-                backgroundColor: `${getRiskDotColor(marketWatch?.overall_sentiment || 'calm')}15`,
-              }}
+              className={`px-2 py-0.5 rounded-full text-[10px] font-mono uppercase font-bold ${getRiskBadgeClass(marketWatch?.overall_sentiment)}`}
             >
               {marketWatch?.overall_sentiment || 'CALM'}
             </span>
