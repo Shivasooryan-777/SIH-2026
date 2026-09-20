@@ -7,27 +7,27 @@ export default {
   theme: {
     extend: {
       colors: {
-        canvas: "#09090B",
+        canvas: "var(--color-canvas)",
         surface: {
-          DEFAULT: "#131316",
-          hover: "#1C1C21",
+          DEFAULT: "var(--color-surface)",
+          hover: "var(--color-surface-hover)",
         },
         border: {
-          DEFAULT: "#26262B",
+          DEFAULT: "var(--color-border)",
         },
         text: {
-          primary: "#F4F4F5",
-          secondary: "#A1A1AA",
-          tertiary: "#71717A",
+          primary: "var(--color-text-primary)",
+          secondary: "var(--color-text-secondary)",
+          tertiary: "var(--color-text-tertiary)",
         },
         accent: {
-          DEFAULT: "#29B6C2",
-          glow: "#6EE7E0",
+          DEFAULT: "rgb(var(--color-accent) / <alpha-value>)",
+          glow: "rgb(var(--color-accent-glow) / <alpha-value>)",
         },
         semantic: {
-          positive: "#22A97A", // FixNow
-          wait: "#E8A33D",     // Wait / Elevated
-          risk: "#E4574C",     // High risk
+          positive: "rgb(var(--color-positive) / <alpha-value>)",
+          wait: "rgb(var(--color-warning) / <alpha-value>)",
+          risk: "rgb(var(--color-danger) / <alpha-value>)",
         },
         landing: {
           start: "#05070D",
@@ -44,7 +44,7 @@ export default {
         "2xl": "1rem",
       },
       boxShadow: {
-        "accent-glow": "0 0 35px -5px rgba(41, 182, 194, 0.25)",
+        "accent-glow": "var(--shadow-hero)",
       },
     },
   },

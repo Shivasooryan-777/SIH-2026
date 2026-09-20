@@ -5,30 +5,97 @@
 @layer base {
   :root {
     color-scheme: dark;
+    --color-canvas: #09090B;
+    --color-surface: #131316;
+    --color-surface-hover: #1C1C21;
+    --color-border: #26262B;
+    --color-text-primary: #F4F4F5;
+    --color-text-secondary: #A1A1AA;
+    --color-text-tertiary: #71717A;
+    --color-accent: 41 182 194;
+    --color-accent-glow: 110 231 224;
+    --color-positive: 34 169 122;
+    --color-warning: 232 163 61;
+    --color-danger: 228 87 76;
+    --shadow-hero: 0 0 35px -5px rgba(41, 182, 194, 0.25);
+  }
+
+  html.light {
+    color-scheme: light;
+    --color-canvas: #FAFAFA;
+    --color-surface: #FFFFFF;
+    --color-surface-hover: #F4F4F5;
+    --color-border: #E4E4E7;
+    --color-text-primary: #18181B;
+    --color-text-secondary: #52525B;
+    --color-text-tertiary: #A1A1AA;
+    --color-accent: 14 124 136;
+    --color-accent-glow: 41 182 194;
+    --color-positive: 21 128 61;
+    --color-warning: 180 83 9;
+    --color-danger: 185 28 28;
+    --shadow-hero: 0 8px 24px rgba(14, 124, 136, 0.12);
+  }
+
+  .landing-isolated {
+    color-scheme: dark;
+    --color-canvas: #05070D;
+    --color-surface: #131316;
+    --color-surface-hover: #1C1C21;
+    --color-border: #26262B;
+    --color-text-primary: #F5F5F4;
+    --color-text-secondary: #A1A1AA;
+    --color-text-tertiary: #71717A;
+    --color-accent: 41 182 194;
+    --color-accent-glow: 110 231 224;
+    --color-positive: 34 169 122;
+    --color-warning: 232 163 61;
+    --color-danger: 228 87 76;
+    --shadow-hero: 0 0 35px -5px rgba(41, 182, 194, 0.25);
   }
 
   html {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    color: #F4F4F5;
-    background-color: #09090B;
+    color: var(--color-text-primary);
+    background-color: var(--color-canvas);
+  }
+
+  /* Smooth 180ms color-transition on theme switch for background/border/text/shadow properties */
+  body,
+  header,
+  main,
+  div,
+  button,
+  input,
+  span,
+  table,
+  tr,
+  td,
+  th {
+    transition-property: background-color, border-color, color, box-shadow;
+    transition-duration: 180ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    background-color: #09090B;
+    background-color: var(--color-canvas);
+    color: var(--color-text-primary);
     overflow-x: hidden;
   }
 
   /* JetBrains Mono applied to all numeric tabular values per design system */
-  .tabular-nums, .font-mono {
+  .tabular-nums,
+  .font-mono {
     font-family: 'JetBrains Mono', monospace;
     font-variant-numeric: tabular-nums;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   *,
   ::before,
   ::after {
@@ -44,15 +111,18 @@
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #09090B;
+  background: var(--color-canvas);
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #26262B;
+  background: var(--color-border);
   border-radius: 9999px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #3F3F46;
+  background: var(--color-surface-hover);
 }
 
 /* Keyframes for Always-On ticker */
@@ -60,6 +130,7 @@
   0% {
     transform: translateX(0);
   }
+
   100% {
     transform: translateX(-50%);
   }

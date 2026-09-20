@@ -62,12 +62,12 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenTransparency }) => {
   const getRiskDotColor = (level?: string | null) => {
     switch ((level || 'calm').toLowerCase()) {
       case 'high':
-        return 'var(--color-danger)';
+        return 'rgb(var(--color-danger))';
       case 'elevated':
-        return 'var(--color-warning)';
+        return 'rgb(var(--color-warning))';
       case 'calm':
       default:
-        return 'var(--color-positive)';
+        return 'rgb(var(--color-positive))';
     }
   };
 
