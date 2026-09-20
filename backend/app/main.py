@@ -5,6 +5,7 @@ Intelligent Freight Forecasting & Vessel Chartering Decision Support System
 SIH 2026 | Problem Statement ID: SIH26006 | Ministry of Steel
 """
 
+import os
 import logging
 from fastapi import FastAPI, Depends, status
 from fastapi.responses import JSONResponse
@@ -19,6 +20,7 @@ from backend.app.api.risk_radar import router as risk_radar_router
 from backend.app.api.decision import router as decision_router
 from backend.app.api.idle_contract import router as idle_contract_router
 from backend.app.api.interaction import router as interaction_router
+from backend.app.api.reference import router as reference_router
 
 logger = logging.getLogger("backend_api")
 
@@ -29,12 +31,17 @@ app = FastAPI(
 )
 
 # Explicit origins for local Vite dev server and production clients
-ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
+_env_origins = os.getenv("ALLOWED_ORIGINS", "")
+ALLOWED_ORIGINS = (
+    [origin.strip() for origin in _env_origins.split(",") if origin.strip()]
+    if _env_origins
+    else [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -77,6 +84,7 @@ app.include_router(risk_radar_router, prefix="/api")
 app.include_router(decision_router, prefix="/api")
 app.include_router(idle_contract_router, prefix="/api")
 app.include_router(interaction_router, prefix="/api")
+app.include_router(reference_router, prefix="/api")
 
 
 @app.get("/", tags=["Root"])
