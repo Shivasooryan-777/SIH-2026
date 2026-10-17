@@ -1,5 +1,5 @@
 # Backend and Ingestion Dependencies
-# Locked stack per AGENTS.md
+# Locked stack per docs/blueprint.md
 
 # Data and Ingestion (Session 2)
 yfinance>=0.2.38
