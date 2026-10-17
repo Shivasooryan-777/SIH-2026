@@ -61,3 +61,13 @@ data/processed/*
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# AI agent instruction files (local only)
+AGENTS.md
+GEMINI.md
+CLAUDE.md
+.agent/
+.agents/
+.gemini/
+.cursor/
+.cursorrules
